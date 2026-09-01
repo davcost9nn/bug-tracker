@@ -1,21 +1,18 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'snakee/golang-junit:1.21'
+            reuseNode true
+            args '-u root'
+        }
+    }
     stages {
-        stage('Unit Tests - Backend') {
-            agent {
-                docker {
-                    image 'snakee/golang-junit:1.21'
-                    reuseNode true 
-                }
-            }
+        stage('Test') {
             steps {
                 dir('bugtracker-backend') {
-                    withEnv(["GOCACHE=/var/jenkins_home/workspace/BugTracker pipeline/.go-cache"]) {
-    sh 'go test -v ./...'
+                    sh 'go test -v ./...'  // Теперь работает как root
                 }
             }
         }
     }
-  }
 }
