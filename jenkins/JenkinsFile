@@ -2,15 +2,14 @@ pipeline {
     agent-any
 
     stages {
-        stage {
-            stage('Unit Tests - Backend') {
-                agent {
-                    docker {
-                        image 'snakee/golang-junit:1.21'
-                        reuseNode true
-                        args '-u root'
-                    }
+        stage('Unit Tests - Backend') {
+            agent {
+                docker {
+                    image 'snakee/golang-junit:1.21'
+                    reuseNode true
+                    args '-u root'
                 }
+            }
                 
                 steps {
                     dir('bugtracker-backend') {
@@ -18,24 +17,23 @@ pipeline {
                     }
                 }
             }
-        }
     
                
-            stage ('Unit Tests - Frontend') {
-                agent {
-                    docker {
-                        image 'node:20-alpine'
-                        reuseNode true
-                        args '-u root'
+        stage ('Unit Tests - Frontend') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    reuseNode true
+                    args '-u root'
+                }
+            }
+            steps {
+                dir('bugtracker-frontend') {
+                    sh '''
+                        npm ci
+                        npm test
+                    '''
                     }
                 }
-                steps {
-                    dir('bugtracker-frontend') {
-                        sh '''
-                            npm ci
-                            npm test
-                        '''
-                        }
-                    }
-                }
-        }
+            }
+    }
