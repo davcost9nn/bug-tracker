@@ -137,7 +137,7 @@ pipeline {
             }
         }
         stage ('Performance Tests') {
-            agents {
+            agent {
                 docker {
                     image 'grafana/k6:latest'
                     reuseNode true
