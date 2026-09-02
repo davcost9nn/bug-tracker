@@ -94,7 +94,7 @@ pipeline {
             }
             steps {
                 dir ('tests-api') {
-                    sh 'npx wait-port http://localhost:8080/api/health -t 30000'
+                        
 
                     sh 'npm ci'
                     sh 'npx playwright test'
@@ -132,6 +132,29 @@ pipeline {
                         reportDir: 'tests-e2e/playwright-report',
                         reportFiles: 'index.html',
                         reportName: 'Playwright E2E Test Report'
+                    ]
+                }
+            }
+        }
+        stage ('Performance Tests') {
+            agents {
+                docker {
+                    image 'grafana/k6:latest'
+                    reuseNode true
+                    args '-u 0 --network=host --entrypoint=""'
+                }
+            }
+            steps {
+                dir ('tests-perf') {
+                    sh 'k6 run script.js'
+                }
+            }
+            post {
+                always {
+                    publishHTML target: [
+                        reportDir: 'tests-perf',
+                        reportFiles: 'perf-results.html',
+                        reportName: 'Performance Test Report'
                     ]
                 }
             }
