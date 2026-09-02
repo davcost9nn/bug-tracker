@@ -10,15 +10,18 @@ pipeline {
                     args '-u root'
                 }
             }
-                
                 steps {
                     dir('bugtracker-backend') {
-                        sh 'go test -v ./...'  // Теперь работает как root
+                        sh 'go test -v ./... 2>&1 | go-junit-report > test-results.xml'  // Теперь работает как root
+                    }
+                }
+                post {
+                    always {
+                        junit 'bugtracker-backend/report.xml'
                     }
                 }
             }
     
-               
         stage ('Unit Tests - Frontend') {
             agent {
                 docker {
@@ -34,7 +37,7 @@ pipeline {
                         npm test
                     '''
                     }
-                }
+            }
             post {
                 always {
                     junit 'bugtracker-frontend/test-results.xml'
