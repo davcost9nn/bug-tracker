@@ -5,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-    branckes:
+    branches:
       - main
   workflow_dispatch:
 
@@ -35,7 +35,7 @@ jobs:
 
           echo "## Go Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat coverage.txt>> $GITHUB_STEP_SUMMARY
+          cat coverage.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
           echo "report<<EOF" >> $GITHUB_OUTPUT
@@ -94,9 +94,9 @@ jobs:
       - name: Create Backend Coverage Comment
         uses: peter-evans/create-or-update-comment@v4
         with:
-          issue-number: ${{ github.event.pull_request.number}}
+          issue-number: ${{ github.event.pull_request.number }}
           body: |
             ## Backend Test Coverage Report
             ```
-            ${{ needs.unit-tests-backend.outputs.coverage}}
+            ${{ needs.unit-tests-backend.outputs.coverage }}
             ```
