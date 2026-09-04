@@ -163,3 +163,5 @@ jobs:
         with:
           name: API Tests Report
           path: ./tests-api/test-results/*.xml
+          reporter: jest-junit
+           
