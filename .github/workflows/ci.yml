@@ -253,3 +253,41 @@ jobs:
             -H "Authorization: Bearer ${RENDER_API_TOKEN}" \
             https://api.render.com/v1/services/srv-daerg0gn74is73f69n00/deploys
            
+  post-deployment-tests:
+    needs: deploy-staging
+
+    if: github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Playwright
+        working-directory: ./tests-e2e
+        run: |
+          npm ci
+          npx playwright install
+
+      - name: Run Post Deployment Tests
+        working-directory: ./tests-e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://bug-tracker-frontend-staging-davcost9nn.onrender.com
+        run: npx playwright test
+
+      - name: Upload Post Deployment Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postdeployment-playwright-report
+          path: ./tests-e2e/playwright-report/
+          retention-days: 30
+
+      - name: Publish Post Deployment Test Results
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: Post Deployment Tests Report
+          path: ./tests-e2e/test-results/results.xml
+          reporter: jest-junit
