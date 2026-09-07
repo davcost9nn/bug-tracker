@@ -264,6 +264,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Wait for Staging Backend
+        run: |
+          for i in {1..12}; do
+            if curl -sf https://bug-tracker-backend-staging-davcost9nn.onrender.com/api/health > /dev/null; then
+              echo "Backend is ready"
+              exit 0
+            fi
+
+            echo "Backend is not ready yet..."
+            sleep 10
+          done
+
+          echo "Backend did not become ready"
+          exit 1
+
       - name: Install Playwright
         working-directory: ./tests-e2e
         run: |
